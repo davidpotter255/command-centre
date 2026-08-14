@@ -1,4 +1,8 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react'
+
+// Remotion + the Player are ~350kB of the bundle. Split them out so the
+// dashboard, which is what loads on a phone at 2pm on a Saturday, stays light.
+const VideoStudio = lazy(() => import('./video-studio/VideoStudio'))
 
 // ─── Storage helpers (localStorage for Vercel, no backend needed) ───
 const store = {
@@ -84,6 +88,7 @@ function Sidebar({ active, onNav, mobileOpen, onClose }) {
     { id: 'fixtures', icon: '📅', label: 'Fixtures' },
     { id: 'results', icon: '✅', label: 'Results' },
     { id: 'import', icon: '📋', label: 'Import' },
+    { id: 'video', icon: '🎬', label: 'Video Studio' },
   ]
 
   return (
@@ -650,7 +655,7 @@ export default function App() {
     if (newPicks.length > 0) setPicks(p => [...newPicks, ...p])
   }, [])
 
-  const titles = { dashboard: ['Dashboard', 'Overview of today\'s football picks and performance'], picks: ['Picks', 'Detailed view with xG, form, and filters'], fixtures: ['Fixtures', 'Today\'s games grouped by league'], results: ['Results', 'Settled picks and P&L tracking'], import: ['Import', 'Add picks manually or paste script output'] }
+  const titles = { dashboard: ['Dashboard', 'Overview of today\'s football picks and performance'], picks: ['Picks', 'Detailed view with xG, form, and filters'], fixtures: ['Fixtures', 'Today\'s games grouped by league'], results: ['Results', 'Settled picks and P&L tracking'], import: ['Import', 'Add picks manually or paste script output'], video: ['Video Studio', 'Turn a pick into a social-ready vertical video'] }
   const [title, subtitle] = titles[page] || ['', '']
 
   return (
@@ -663,6 +668,11 @@ export default function App() {
         {page === 'fixtures' && <FixturesPage picks={picks} />}
         {page === 'results' && <ResultsPage picks={picks} />}
         {page === 'import' && <ImportPage onImport={onImport} onAddManual={onAddManual} />}
+        {page === 'video' && (
+          <Suspense fallback={<div style={{ padding: 40, color: 'var(--text-dim)' }}>Loading video engine…</div>}>
+            <VideoStudio picks={picks} />
+          </Suspense>
+        )}
       </div>
     </div>
   )

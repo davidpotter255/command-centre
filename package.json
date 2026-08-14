@@ -6,14 +6,25 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "studio": "remotion studio",
+    "render": "remotion render",
+    "render:best-bet": "remotion render BestBet-9x16 out/best-bet.mp4",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@remotion/google-fonts": "^4.0.509",
+    "@remotion/player": "^4.0.509",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "remotion": "^4.0.509"
   },
   "devDependencies": {
+    "@remotion/cli": "^4.0.509",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.9.3",
     "vite": "^5.1.0"
   }
 }

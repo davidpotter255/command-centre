@@ -2,3 +2,7 @@ node_modules
 dist
 .vercel
 .DS_Store
+
+# Remotion
+out
+video-props.json
