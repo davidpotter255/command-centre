@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <title>DP Training</title>
+  <style>
+    :root{--bg:#f6f7f8;--card:#fff;--ink:#111827;--muted:#667085;--line:#e5e7eb;--accent:#166534;--accent2:#dcfce7;--warn:#fff7ed;--danger:#b91c1c}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+    .app{max-width:760px;margin:0 auto;padding:18px 16px 96px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.brand{font-weight:800;font-size:24px}.sub{color:var(--muted);font-size:13px}
+    .tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;position:sticky;top:0;background:rgba(246,247,248,.94);backdrop-filter:blur(8px);padding:8px 0;z-index:5}.tab{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 6px;font-size:12px}.tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .panel{display:none}.panel.active{display:block}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0}.hero{background:linear-gradient(135deg,#fff,#f0fdf4)}
+    h2{font-size:18px;margin:0 0 8px} h3{font-size:15px;margin:0 0 6px}.row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{font-size:12px;padding:6px 9px;border-radius:999px;background:#f3f4f6;color:#374151}.chip.green{background:var(--accent2);color:#14532d}
+    button,a.btn{appearance:none;border:0;border-radius:10px;padding:10px 12px;font-weight:700;background:var(--accent);color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:42px}.secondary{background:#fff!important;color:var(--ink)!important;border:1px solid var(--line)!important}.danger{background:#fff!important;color:var(--danger)!important;border:1px solid #fecaca!important}
+    .exercise{padding:12px 0;border-top:1px solid var(--line)}.exercise:first-of-type{border-top:0}.ex-head{display:flex;justify-content:space-between;gap:10px}.ex-name{font-weight:750}.ex-meta{font-size:12px;color:var(--muted);margin-top:3px}.set-grid{display:grid;grid-template-columns:34px 1fr 1fr 48px;gap:8px;align-items:center;margin-top:10px}.set-grid input{width:100%;font-size:16px;padding:9px;border:1px solid var(--line);border-radius:9px;background:#fff}.set-grid .head{font-size:11px;color:var(--muted);text-align:center}.setdone{width:42px;height:42px;border-radius:50%;padding:0;background:#e5e7eb;color:#111827}.setdone.done{background:var(--accent);color:#fff}
+    .score{font-size:36px;font-weight:850;line-height:1}.progress{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:10px}.progress > div{height:100%;background:var(--accent);width:0%}
+    .week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:10px}.day{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center;font-size:11px}.day strong{display:block;font-size:14px;margin-top:4px}
+    .notice{background:var(--warn);border:1px solid #fed7aa;border-radius:12px;padding:12px;font-size:13px;line-height:1.45}.muted{color:var(--muted)} .small{font-size:12px}.hidden{display:none!important}
+    .choice{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.choice button{background:#fff;color:var(--ink);border:1px solid var(--line)}.choice button.selected{background:var(--accent2);border-color:#86efac;color:#14532d}
+    .mob-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-top:1px solid var(--line)}.mob-item:first-child{border-top:0}
+    .metric{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric .card{margin:0}.big{font-size:28px;font-weight:800}
+    .footer-note{font-size:11px;color:var(--muted);margin-top:14px}
+    @media(max-width:520px){.tabs{grid-template-columns:repeat(5,1fr)}.tab{font-size:10px;padding:9px 2px}.metric{grid-template-columns:1fr}.set-grid{grid-template-columns:28px 1fr 1fr 44px}}
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="top"><div><div class="brand">DP Training</div><div class="sub">Lean • engine • athletic • mobile</div></div><div class="chip green" id="streakChip">0 week streak</div></div>
+  <nav class="tabs" aria-label="App sections">
+    <button class="tab active" data-tab="today">Today</button><button class="tab" data-tab="workouts">Train</button><button class="tab" data-tab="run">Run</button><button class="tab" data-tab="mobility">Mobility</button><button class="tab" data-tab="progress">Progress</button>
+  </nav>
+  <section class="panel active" id="today">
+    <div class="card hero">
+      <div class="row"><div><h2>What can you do today?</h2><div class="sub">Choose time + location and the app picks a sensible session.</div></div><div class="score" id="weekScore">0</div></div>
+      <div class="progress"><div id="scoreBar"></div></div><div class="small muted" style="margin-top:6px">Weekly target: 8 points</div>
+      <div class="choice" style="margin-top:14px" id="timeChoice"><button data-value="20">20 min</button><button class="selected" data-value="35">35 min</button><button data-value="45">45 min</button></div>
+      <div class="choice" style="margin-top:8px" id="placeChoice"><button data-value="home">Home</button><button class="selected" data-value="gym">Gym</button><button data-value="padel">Padel</button></div>
+      <button id="recommendBtn" style="margin-top:12px;width:100%">Recommend today’s session</button>
+    </div>
+    <div class="card" id="recommendation"><h2>Suggested</h2><div id="recText">35-minute Gym A: movement prep → strength → 8-minute engine finisher.</div><button class="secondary" id="startRec" style="margin-top:10px">Open workout</button></div>
+  </section>
+  <section class="panel" id="workouts">
+    <div class="card"><div class="row"><div><h2 id="workoutTitle">Workout A — Strength + Engine</h2><div class="sub" id="workoutSub">~40–45 min • full commercial gym</div></div><div class="chips"><button class="secondary" id="wa">A</button><button class="secondary" id="wb">B</button><button class="secondary" id="whome">Home</button></div></div>
+      <div id="exerciseList"></div>
+      <button id="finishWorkout" style="width:100%;margin-top:12px">Finish workout + 3 points</button>
+    </div>
+  </section>
+  <section class="panel" id="run">
+    <div class="card"><h2>5K engine plan</h2><div class="sub">One run/walk session weekly. Finish feeling you could do more.</div>
+      <div class="metric" style="margin-top:12px"><div class="card"><div class="small muted">Current phase</div><div class="big" id="runWeek">Weeks 1–2</div><div>1 min run / 1 min walk × 10</div></div><div class="card"><div class="small muted">Total</div><div class="big">20 min</div><div>+ 5 min brisk walk warm-up</div></div></div>
+      <div class="row" style="margin-top:12px"><button id="runDone">Log run + 1 point</button><button class="secondary" id="nextRun">Advance phase</button></div>
+    </div>
+  </section>
+  <section class="panel" id="mobility">
+    <div class="card"><h2>Daily 6-minute mobility</h2><div class="sub">The goal is movement frequency, not heroic stretching.</div><div id="mobList"></div><button id="mobDone" style="width:100%;margin-top:12px">Complete + 1 point</button></div>
+  </section>
+  <section class="panel" id="progress">
+    <div class="metric"><div class="card"><div class="small muted">This week</div><div class="big"><span id="scoreMetric">0</span>/8</div></div><div class="card"><div class="small muted">Workouts logged</div><div class="big" id="workoutCount">0</div></div></div>
+    <div class="card"><h2>Recent training</h2><div class="week-grid" id="weekGrid"></div></div>
+    <div class="card"><h2>Strength history</h2><div class="sub">Tracks your last logged weights/reps per exercise on this device.</div><div id="historyList" style="margin-top:10px"></div></div>
+    <button class="danger" id="resetData" style="width:100%">Reset local data</button><div class="footer-note">Prototype stores data locally on this device/browser only.</div>
+  </section>
+</div>
+<script>
+(()=>{
+const KEY='dp-training-v1';
+const state=JSON.parse(localStorage.getItem(KEY)||'{"score":0,"logs":[],"runPhase":0,"streak":0,"last":{}}');
+const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
+const workouts={A:{title:'Workout A — Strength + Engine',sub:'~40–45 min • full commercial gym',items:[['Medicine-ball slam','3 × 5','Power'],['Leg press','3 × 8–10','Strength'],['Chest-supported row','3 × 8–10','Pull'],['DB Romanian deadlift','3 × 8–10','Posterior chain'],['Landmine press','3 × 8 each','Press'],['Split squat','2 × 8 each','Single-leg'],['Pallof press','2 × 10 each','Core'],['Bike/rower intervals','5 rounds','30 sec hard / 60 sec easy']]},B:{title:'Workout B — Athletic + Strength',sub:'~40 min • full commercial gym',items:[['Low box jump','3 × 3','Power'],['Hack/goblet squat','3 × 8','Strength'],['Neutral-grip lat pulldown','3 × 8–10','Pull'],['Step-up','3 × 8 each','Single-leg'],['Cable chest press','3 × 8–12','Press'],['Cable row','2 × 12','Upper back'],['Farmer carry','3 × 30m','Grip + trunk'],['Easy cardio','10 min','Zone 2-ish']]},H:{title:'Home — 30 min Full Body',sub:'8kg dumbbells • low friction option',items:[['Goblet squat','3 × 12','Slow 3-sec descent'],['DB Romanian deadlift','3 × 12','Controlled'],['1-arm supported row','3 × 12 each','Use chair/bench support'],['Reverse lunge','2 × 8 each','Or split squat'],['Incline push-up','2 × 8–12','Comfortable only'],['Dead bug','2 × 8 each','Core'],['Fast step-ups','3 × 20 sec','Finisher']]}};
+const mobility=[['90/90 hip switches','8 controlled reps'],['Hip-flexor stretch','30 sec each'],['Adductor rock-back','8 each'],['Thoracic rotation','6 each'],['Wall slides','10'],['Deep squat hold','30 sec']];
+function setsFor(p){const m=p.match(/^(\d+)/);return m?Math.min(parseInt(m[1]),5):1} let current='A';
+function renderWorkout(k){current=k;const w=workouts[k];workoutTitle.textContent=w.title;workoutSub.textContent=w.sub;exerciseList.innerHTML='';w.items.forEach(([name,pres,note])=>{const wrap=document.createElement('div');wrap.className='exercise';wrap.innerHTML=`<div class="ex-head"><div><div class="ex-name">${name}</div><div class="ex-meta">${pres} • ${note}</div></div></div>`;for(let i=1;i<=setsFor(pres);i++){const last=state.last[name]||{};const row=document.createElement('div');row.className='set-grid';row.innerHTML=`<div class="head">${i}</div><input inputmode="decimal" placeholder="kg" value="${last.weight||''}"><input inputmode="numeric" placeholder="reps" value="${last.reps||''}"><button type="button" class="setdone">✓</button>`;row.querySelector('.setdone').onclick=e=>{e.currentTarget.classList.toggle('done');const inputs=row.querySelectorAll('input');state.last[name]={weight:inputs[0].value,reps:inputs[1].value};save()};wrap.appendChild(row)}exerciseList.appendChild(wrap)})}
+function renderWeek(){weekGrid.innerHTML='';const now=new Date(),day=(now.getDay()+6)%7,mon=new Date(now);mon.setDate(now.getDate()-day);for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);const iso=d.toISOString().slice(0,10),pts=state.logs.filter(l=>l.date.slice(0,10)===iso).reduce((a,b)=>a+b.points,0),div=document.createElement('div');div.className='day';div.innerHTML=`${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i]}<strong>${pts}</strong>`;weekGrid.appendChild(div)}}
+function renderHistory(){const entries=Object.entries(state.last);historyList.innerHTML=entries.length?'':'<div class="muted small">No weights logged yet.</div>';entries.slice(-12).reverse().forEach(([n,v])=>{const d=document.createElement('div');d.className='row';d.style.padding='8px 0';d.innerHTML=`<span>${n}</span><strong>${v.weight||'—'} kg × ${v.reps||'—'}</strong>`;historyList.appendChild(d)})}
+function update(){weekScore.textContent=state.score;scoreMetric.textContent=state.score;scoreBar.style.width=Math.min(100,(state.score/8)*100)+'%';workoutCount.textContent=state.logs.filter(x=>x.type==='workout').length;renderWeek();renderHistory()}
+function addLog(type,points,label){state.score=Math.min(20,state.score+points);state.logs.push({type,points,label,date:new Date().toISOString()});save();update()}
+function bindChoice(id){document.getElementById(id).onclick=e=>{if(e.target.tagName!=='BUTTON')return;[...e.currentTarget.children].forEach(b=>b.classList.remove('selected'));e.target.classList.add('selected')}}bindChoice('timeChoice');bindChoice('placeChoice');
+[...document.querySelectorAll('.tab')].forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab,.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active')});
+wa.onclick=()=>renderWorkout('A');wb.onclick=()=>renderWorkout('B');whome.onclick=()=>renderWorkout('H');finishWorkout.onclick=()=>addLog('workout',3,workouts[current].title);mobDone.onclick=()=>addLog('mobility',1,'Mobility');runDone.onclick=()=>addLog('run',1,'Run/walk');
+function renderRun(){const phases=['Weeks 1–2|1 min run / 1 min walk × 10','Weeks 3–4|2 min run / 1 min walk × 8','Weeks 5–6|4 min run / 1 min walk × 5','Week 7+|Build continuous easy running'];const [a,b]=phases[state.runPhase||0].split('|');runWeek.textContent=a;runWeek.nextElementSibling.textContent=b}renderRun();nextRun.onclick=()=>{state.runPhase=Math.min(3,(state.runPhase||0)+1);save();renderRun()};
+mobility.forEach(([a,b])=>{const r=document.createElement('div');r.className='mob-item';r.innerHTML=`<div><strong>${a}</strong><div class="small muted">${b}</div></div>`;mobList.appendChild(r)});
+recommendBtn.onclick=()=>{const t=document.querySelector('#timeChoice .selected').dataset.value,p=document.querySelector('#placeChoice .selected').dataset.value;let text,key='A';if(p==='home'){key='H';text=t==='20'?'20-minute home circuit.':'Home full-body session.'}else if(p==='padel'){text='Padel counts as your athletic session.'}else{key=t==='45'?'B':'A';text=t==='45'?'Workout B: athletic + strength + easy cardio.':'Workout A: strength + engine.'}recText.textContent=text;startRec.dataset.key=key};startRec.onclick=e=>{renderWorkout(e.currentTarget.dataset.key||'A');document.querySelector('[data-tab="workouts"]').click()};resetData.onclick=()=>{if(confirm('Reset all locally stored training data?')){localStorage.removeItem(KEY);location.reload()}};renderWorkout('A');update();
+})();
+</script>
+</body>
+</html>
